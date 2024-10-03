@@ -16,16 +16,20 @@ switchMode(){
 		return
 	fi
 	local sta="$(status; echo $?)"
-	if $1; then # disconnect, on CellularNetwork
-		if [ "${sta}" = 1 ]; then
-			start
+	if [ $1 = 0 ]; then # disconnect, on CellularNetwork
+		if [ "${sta}" = "1" ]; then
+			printf "正在启动神秘\n"
+			start_core
+			sleep 3
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
 			switchMode $@
 		fi
 	else # connect, on WiFi
-		if [ "${sta}" = 0 ]; then
-			stop
+		if [ "${sta}" = "0" ]; then
+			printf "正在关闭神秘\n"
+			stop_core
+			sleep 3
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
 			switchMode $@
@@ -35,7 +39,7 @@ switchMode(){
 
 selectMode(){
 	local sta="$(status; echo $?)"
-	if $1; then # disconnect, on CellularNetwork
+	if [ $1 = 0 ]; then # disconnect, on CellularNetwork
 		if [ "${sta}" = 1 ]; then
 			local target
 			target="${default_outbound}"
@@ -70,7 +74,7 @@ selectMode(){
 
 clashMode(){
 	local sta="$(status; echo $?)"
-	if $1; then # disconnect, on CellularNetwork
+	if [ $1 = 0 ]; then # disconnect, on CellularNetwork
 		if [ "${sta}" = 0 ]; then
 			local target
 			target="${default_mode}"
@@ -115,28 +119,30 @@ while true; do
 		load
 	fi
 	if wifi || wifi1; then
-		local sta=0
+		sta1=0
 		if [ "${force_need_ssid}" = "true" ]; then
-			sta=1
+			if [ -n "$(ssid)" ]; then
+				sta1=1
+			fi
 		fi
 		case ${mode} in
 			switch)
-				switchMode ${sta};;
+				switchMode ${sta1};;
 			selector)
-				selectMode ${sta};;
+				selectMode ${sta1};;
 			mode)
-				clashMode ${sta};;
+				clashMode ${sta1};;
 			*)
 				toast "short" "未知的模式: ${mode}";;
 		esac
 	else
 		case ${mode} in
 			switch)
-				switchMode 1;;
+				switchMode 0;;
 			selector)
-				selectMode 1;;
+				selectMode 0;;
 			mode)
-				clashMode 1;;
+				clashMode 0;;
 			*)
 				toast "short" "未知的模式: ${mode}";;
 		esac

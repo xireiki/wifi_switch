@@ -19,7 +19,7 @@ wifi1(){
 ssid(){
 	if wifi; then
 		local SSID
-		SSID=`dumpsys wifi | grep mWifiInfo | head -n 1 | cut -d "\"" -f 2`
+		SSID=$(dumpsys wifi | grep mWifiInfo | head -n 1 | cut -d "\"" -f 2)
 		if [ -n "$(printf "%s" "${SSID}" | grep "<unknown ssid>")" ]; then
 			printf "<unknown ssid>"
 			return
@@ -27,6 +27,7 @@ ssid(){
 		printf "%s" "${SSID}"
 	else
 		printf "%s" "<unknown ssid>"
+		return 1
 	fi
 }
 
@@ -81,7 +82,7 @@ status(){
 		return
 	fi
 	local sta
-	sta=$(curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"status"/{gsub(/.*"status":"|"/, "", $2); print $2}')
+	sta=$(curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"status"/{gsub(/.*"status":"|"\}|"/, "", $2); print $2}')
 	if [ "${sta}" = "working" ]; then
 		return 0
 	elif [ "${sta}" = "stopped" ]; then
@@ -95,7 +96,7 @@ status(){
 	fi
 }
 
-stop(){
+stop_core(){
 	if [ "${UseCompatibleMode}" = "true" ]; then
 		toast "short" "兼容模式不支持 switch 模式"
 		return 1
@@ -106,7 +107,7 @@ stop(){
 	fi
 }
 
-start(){
+start_core(){
 	if [ "${UseCompatibleMode}" = "true" ]; then
 		toast "short" "兼容模式不支持 switch 模式"
 		return 1
