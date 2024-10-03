@@ -115,7 +115,7 @@ while true; do
 		if [ "${force_need_ssid}" = "true" ]; then
 			sta=1
 		fi
-		case ${mode}; do
+		case ${mode} in
 			switch)
 				switchMode ${sta};;
 			selector)
@@ -126,7 +126,7 @@ while true; do
 				toast "short" "未知的模式: ${mode}";;
 		esac
 	else
-		case ${mode}; do
+		case ${mode} in
 			switch)
 				switchMode 1;;
 			selector)
