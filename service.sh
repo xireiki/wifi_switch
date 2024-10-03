@@ -45,7 +45,7 @@ selectMode(){
 			if [ -n "${proxy_outbound}" ]; then
 				target="${proxy_outbound}"
 			fi
-			select "${select_outbound}" "${target}"
+			setOutbound "${select_outbound}" "${target}"
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
 			selectMode $@
@@ -60,7 +60,7 @@ selectMode(){
 				target="${direct_outbound}"
 			fi
 			Outbound=`getNowOutbound`
-			select "${select_outbound}" "${direct_outbound}"
+			setOutbound "${select_outbound}" "${direct_outbound}"
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
 			selectMode $@

@@ -117,7 +117,7 @@ start(){
 	fi
 }
 
-select(){
+setOutbound(){
 	if [ -n "$1" ]; then
 		return 1
 	fi
