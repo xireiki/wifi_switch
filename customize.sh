@@ -27,7 +27,7 @@ else
   abort    "*********************************************************"
 fi
 
-if ! [ -d "${MODPATH}/../SingBox_For_Magisk" ]; then
+if ! [ -d "/data/adb/modules/SingBox_For_Magisk" ]; then
 	abort "- 未检测到神秘，安装失败"
 fi
 
@@ -64,6 +64,12 @@ readkey_install_toast:
 	fi
 	rm -f ${MODPATH}/libs/toast.apk
 }
+
+if [ -n "$(cat ${PACKAGELIST} | grep "ice.toast")" ] ; then
+	ui_print "- 已配置 toast 环境，跳过"
+else
+	install_toast
+fi
 
 if [ -n "${CONFIG}" ]; then
 	ui_print "- 正在恢复你的配置"
