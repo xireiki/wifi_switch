@@ -11,6 +11,10 @@ Outbound=
 ClashMode=
 
 switchMode(){
+	if [ "${UseCompatibleMode}" = "true" ]; then
+		toast "short" "兼容模式不支持 switch 模式"
+		return
+	fi
 	local sta="$(status; echo $?)"
 	if $1; then # disconnect, on CellularNetwork
 		if [ "${sta}" = 1 ]; then
@@ -99,7 +103,7 @@ clashMode(){
 	fi
 }
 
-if ! [ -d "${MODDIR}/../SingBox_For_Magisk" ]; then
+if ! [ -d "/data/adb/modules/SingBox_For_Magisk" ] && ! [[ "${UseCompatibleMode}" = "true" ]]; then
 	touch ${MODDIR}/disable
 	touch ${MODDIR}/remove
 	exit

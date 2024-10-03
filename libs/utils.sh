@@ -52,6 +52,10 @@ getSecret(){
 	if status; then
 		return 1
 	fi
+	if [ "${UseCompatibleMode}" = "true" ]; then
+		printf "%s" "${clash_api_secret}"
+		return
+	fi
 	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"secret"/{gsub(/.*"secret":"|"/, "", $2); print $2}'
 	return $?
 }
@@ -60,11 +64,22 @@ getPort(){
 	if status; then
 		return 1
 	fi
+	if [ "${UseCompatibleMode}" = "true" ]; then
+		printf "%s" "${clash_api_port}"
+		return
+	fi
 	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"port"/{gsub(/.*"port":"|"/, "", $2); print $2}'
 	return $?
 }
 
 status(){
+	if [ "${UseCompatibleMode}" = "true" ]; then
+		curl "127.0.0.1:9999/configs" &>/dev/null
+		if ! [ $? = 0 ]; then
+			return 1
+		fi
+		return
+	fi
 	local sta
 	sta=$(curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"status"/{gsub(/.*"status":"|"/, "", $2); print $2}')
 	if [ "${sta}" = "working" ]; then
@@ -81,6 +96,10 @@ status(){
 }
 
 stop(){
+	if [ "${UseCompatibleMode}" = "true" ]; then
+		toast "short" "兼容模式不支持 switch 模式"
+		return 1
+	fi
 	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" -d '{"method":"stop"}' &>/dev/null
 	if ! [ $? = 0 ]; then
 		return 1
@@ -88,6 +107,10 @@ stop(){
 }
 
 start(){
+	if [ "${UseCompatibleMode}" = "true" ]; then
+		toast "short" "兼容模式不支持 switch 模式"
+		return 1
+	fi
 	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" -d '{"method":"start"}' &>/dev/null
 	if ! [ $? = 0 ]; then
 		return 1
