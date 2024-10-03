@@ -45,29 +45,29 @@ prop_md5(){
 }
 
 getKey(){
-	awk '/authorizationKey/{print $2}' ${DataPath}/src/config.yaml
+	awk '/authorizationKey/{print $2}' /data/adb/sfm/src/config.yaml
 	return $?
 }
 
 getSecret(){
-	if status; then
-		return 1
-	fi
 	if [ "${UseCompatibleMode}" = "true" ]; then
 		printf "%s" "${clash_api_secret}"
 		return
+	fi
+	if ! status; then
+		return 1
 	fi
 	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"secret"/{gsub(/.*"secret":"|"/, "", $2); print $2}'
 	return $?
 }
 
 getPort(){
-	if status; then
-		return 1
-	fi
 	if [ "${UseCompatibleMode}" = "true" ]; then
 		printf "%s" "${clash_api_port}"
 		return
+	fi
+	if ! status; then
+		return 1
 	fi
 	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"port"/{gsub(/.*"port":"|"/, "", $2); print $2}'
 	return $?
@@ -119,14 +119,15 @@ start_core(){
 }
 
 setOutbound(){
-	if [ -n "$1" ]; then
+	if [ -z "$1" ]; then
 		return 1
 	fi
-	if [ -n "$2" ]; then
+	if [ -z "$2" ]; then
 		return 1
 	fi
 	local secret
 	secret=$(getSecret)
+	echo Secret $secret
 	if [ -n "${secret}" ]; then
 		curl -X PUT "127.0.0.1:$(getPort)/proxies/$1" -H "authorization: Bearer ${secret}" -H "Content-Type: application/json" -d '{"name": "'$2'"}'
 		return
@@ -135,7 +136,7 @@ setOutbound(){
 }
 
 setMode(){
-	if [ -n "$1" ]; then
+	if [ -z "$1" ]; then
 		return 1
 	fi
 	local secret

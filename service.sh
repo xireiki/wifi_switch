@@ -39,8 +39,9 @@ switchMode(){
 
 selectMode(){
 	local sta="$(status; echo $?)"
+	printf "Status: %s, sta: %s\n" $1 $sta
 	if [ $1 = 0 ]; then # disconnect, on CellularNetwork
-		if [ "${sta}" = 1 ]; then
+		if [ "${sta}" = 0 ]; then
 			local target
 			target="${default_outbound}"
 			if [ -n "${Outbound}" ]; then
@@ -49,7 +50,9 @@ selectMode(){
 			if [ -n "${proxy_outbound}" ]; then
 				target="${proxy_outbound}"
 			fi
+			printf "%s, %s\n" "${select_outbound}" "${target}"
 			setOutbound "${select_outbound}" "${target}"
+			printf "result code: %s\n\n" $?
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
 			selectMode $@
@@ -64,6 +67,7 @@ selectMode(){
 				target="${direct_outbound}"
 			fi
 			Outbound=`getNowOutbound`
+			printf "%s, %s\n" "${select_outbound}" "${target}"
 			setOutbound "${select_outbound}" "${direct_outbound}"
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
