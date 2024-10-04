@@ -112,6 +112,10 @@ clashMode(){
 	fi
 }
 
+if ! [ "${UseCompatibleMode}" = "true" ] && [ -f "${MODDIR}/disable" ]; then
+	exit
+fi
+
 if wifi || wifi1; then
 	sta1=0
 	if [ "${force_need_ssid}" = "true" ]; then
