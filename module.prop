@@ -1,7 +1,7 @@
 id=wifi_switch
 name=WLAN Switching
-version=v1.2
-versionCode=12
+version=v1.3
+versionCode=13
 author=xireiki
 description=WLAN Switching
-# updateJson=https://raw.githubusercontent.com/xireiki/wifi_switch/main/update.json
+updateJson=https://raw.githubusercontent.com/xireiki/wifi_switch/main/update.json
