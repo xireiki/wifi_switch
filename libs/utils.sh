@@ -31,6 +31,12 @@ ssid(){
 	fi
 }
 
+connected(){
+	if [ -z "$(cat /data/misc/net/rt_tables | grep wlan)" ]; then
+		return 1
+	fi
+}
+
 load(){
 	if [ -n "$1" ]; then
 		. $1
@@ -127,7 +133,6 @@ setOutbound(){
 	fi
 	local secret
 	secret=$(getSecret)
-	echo Secret $secret
 	if [ -n "${secret}" ]; then
 		curl -X PUT "127.0.0.1:$(getPort)/proxies/$1" -H "authorization: Bearer ${secret}" -H "Content-Type: application/json" -d '{"name": "'$2'"}'
 		return
