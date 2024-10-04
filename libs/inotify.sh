@@ -112,7 +112,7 @@ clashMode(){
 	fi
 }
 
-if ! [ "${UseCompatibleMode}" = "true" ] && [ -f "${MODDIR}/disable" ]; then
+if [ -f "${MODDIR}/../disable" ]; then
 	exit
 fi
 
