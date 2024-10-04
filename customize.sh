@@ -3,10 +3,11 @@ SKIPUNZIP=1
 TIMESTAMP=$(date "+%Y%m%d%H%M")
 PACKAGELIST="/data/system/packages.list"
 BOXPATH="busybox"
+CONFIG=
 
-if [ -f "${MODPATH}/config.sh" ]; then
+if [ -f "/data/adb/modules/wifi_switch/config.sh" ]; then
 	ui_print "- 检测到配置文件，正在备份"
-	CONFIG=`cat "${MODPATH}/config.sh"`
+	CONFIG=$(cat "/data/adb/modules/wifi_switch/config.sh")
 fi
 
 unzip -o "${ZIPFILE}" -x 'META-INF/*' -d ${MODPATH} >&2
@@ -79,7 +80,7 @@ readkey_install_toast:
 	ui_print "- 配置 toast"
 	pm install ${MODPATH}/libs/toast.apk
 	if [ -z "$(cat ${PACKAGELIST} | grep "ice.toast")" ] ; then
-		ui_print "- 配置失败，如需配置请重新刷写模块"
+		ui_print "- 配置失败，如需配置请重新刷写模块或手动安装 libs/toast.apk"
 	fi
 	rm -f ${MODPATH}/libs/toast.apk
 }

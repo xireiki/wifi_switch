@@ -22,7 +22,6 @@ switchMode(){
 	local sta="$(status; echo $?)"
 	if [ $1 = 0 ]; then # disconnect, on CellularNetwork
 		if [ "${sta}" = "1" ]; then
-			printf "正在启动神秘\n"
 			start_core
 			sleep 3
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
@@ -31,7 +30,6 @@ switchMode(){
 		fi
 	else # connect, on WiFi
 		if [ "${sta}" = "0" ]; then
-			printf "正在关闭神秘\n"
 			stop_core
 			sleep 3
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
