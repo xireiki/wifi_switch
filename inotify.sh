@@ -119,6 +119,9 @@ if wifi || wifi1; then
 			sta1=1
 		fi
 	fi
+	if [ "${sta1}" = 0 ]; then
+		exit
+	fi
 	case ${mode} in
 		switch)
 			switchMode ${sta1};;
