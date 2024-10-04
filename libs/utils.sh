@@ -237,7 +237,7 @@ notify(){
 	if [ "${VERBOSE}" = true ]; then
 		ARGV="${ARGV} -v"
 	fi
-	ARGV="${ARGV} -t ${TITLETEXT}"
+	ARGV="${ARGV} -t '${TITLETEXT}'"
 	if [ -n "${ICON}" ]; then
 		ARGV="${ARGV} -i ${ICON}"
 	fi

@@ -9,9 +9,7 @@ fi
 MODDIR=${0%/*}
 DataPath="/data/adb/sfm"
 . ${MODDIR}/libs/utils.sh
-
 load
-configHash=`prop_md5`
 
 Outbound=
 ClashMode=
