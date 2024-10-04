@@ -60,6 +60,3 @@ direct_mode_list=""
 ###  direct_mode_list="Ciallo,规则模式-我不免流-FakeIP;爱莉希雅世界第一,规则模式-我不免流-RedirHost"
 ###  切记使用英文逗号( , )和英文分号( ; )
 ###  多个选项之间使用英文分号(;)分割
-
-sleep_time=5
-## 两次检查 WiFi 状态之间的间隔，单位: s
