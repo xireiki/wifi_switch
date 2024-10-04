@@ -16,4 +16,4 @@ if ! [ "${UseCompatibleMode}" = "true" ] && [ ! -d "/data/adb/modules/SingBox_Fo
 	exit
 fi
 
-inotifyd ${MODDIR}/inotify.sh /data/misc/net/rt_tables
+inotifyd ${MODDIR}/libs/inotify.sh /data/misc/net/rt_tables

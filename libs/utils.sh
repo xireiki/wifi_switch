@@ -63,7 +63,7 @@ getSecret(){
 	if ! status; then
 		return 1
 	fi
-	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"secret"/{gsub(/.*"secret":"|"/, "", $2); print $2}'
+	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | getKeyValue secret
 	return $?
 }
 
@@ -75,7 +75,7 @@ getPort(){
 	if ! status; then
 		return 1
 	fi
-	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"port"/{gsub(/.*"port":"|"/, "", $2); print $2}'
+	curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | getKeyValue port
 	return $?
 }
 
@@ -88,7 +88,7 @@ status(){
 		return
 	fi
 	local sta
-	sta=$(curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"status"/{gsub(/.*"status":"|"\}|"/, "", $2); print $2}')
+	sta=$(curl "127.0.0.1:23333/api/kernel" -H "authorization: $(getKey)" -H "Content-Type: application/json" 2>/dev/null | getKeyValue status)
 	if [ "${sta}" = "working" ]; then
 		return 0
 	elif [ "${sta}" = "stopped" ]; then
@@ -190,7 +190,7 @@ notify(){
 	if [ -z "$*" ]; then
 		return 1
 	fi
-	
+
 	ARGS="${@}"
 	VERBOSE=false
 	TITLETEXT="Notification"
@@ -199,37 +199,32 @@ notify(){
 	STYLE=""
 	CONTENTINTENT=""
 	TAG="TAG"
-	
+
 	for arg in "${@}"; do
 		case "${arg}" in
-		-h | --help)
-			helpText && exit 0;;
-		-v | --verbose)
-			VERBOSE=true
-			shift 1
-			;;
-		-t | --title)
-			TITLETEXT="${2}"
-			shift 2
-			;;
-		-I | --icon)
-			ICON="${2}"
-			shift 2
-			;;
-		-l | --large-icon)
-			LARGEICON="${2}"
-			shift 2
-			;;
-		-s | --style)
-			STYLE="${2}"
-			shift 2
-			;;
-		-c | --content-intent)
-			CONTENTINTENT="${2}"
-			shift 2;;
-		-i | --id)
-			TAG="${2}"
-			shift 2;;
+			-h | --help)
+				helpText && exit 0;;
+			-v | --verbose)
+				VERBOSE=true
+				shift 1;;
+			-t | --title)
+				TITLETEXT="${2}"
+				shift 2;;
+			-I | --icon)
+				ICON="${2}"
+				shift 2;;
+			-l | --large-icon)
+				LARGEICON="${2}"
+				shift 2;;
+			-s | --style)
+				STYLE="${2}"
+				shift 2;;
+			-c | --content-intent)
+				CONTENTINTENT="${2}"
+				shift 2;;
+			-i | --id)
+				TAG="${2}"
+				shift 2;;
 		esac
 	done
 	
@@ -237,7 +232,7 @@ notify(){
 	if [ "${VERBOSE}" = true ]; then
 		ARGV="${ARGV} -v"
 	fi
-	ARGV="${ARGV} -t '${TITLETEXT}'"
+		ARGV="${ARGV} -t '${TITLETEXT}'"
 	if [ -n "${ICON}" ]; then
 		ARGV="${ARGV} -i ${ICON}"
 	fi
@@ -263,19 +258,29 @@ getTarget(){
 	printf "%s" "$1" | tr ';' "\n" | awk -F ',' '/'"$2"'/{gsub(/.*'"$2"',/, "", $2); print $2}'
 }
 
+getKeyValue(){
+	if [ -z "${1}" ]; then
+		return
+	fi
+	local key="${1}"
+	local str
+	read -r line
+	printf "$line" | grep -E -o '"'${key}'" *: *[0-9]*|"'${key}'" *: *"[^"]+"|"'${key}'" *: *true|"'${key}'" *: *false|"'${key}'" *: *null' | awk -F '(: ?)' '{gsub(/^"|"$/, "", $2); print $2}'
+}
+
 getNowOutbound(){
 	secret=$(getSecret)
 	if [ -n "${secret}" ]; then
-		curl "127.0.0.1:$(getPort)/proxies/${select_outbound}" -H "authorization: Bearer ${secret}" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"now"/{gsub(/.*"now":"|"/, "", $2); print $2}'
+		curl "127.0.0.1:$(getPort)/proxies/${select_outbound}" -H "authorization: Bearer ${secret}" -H "Content-Type: application/json" 2>/dev/null | getKeyValue now
 	fi
-	curl "127.0.0.1:$(getPort)/proxies/${select_outbound}" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"now"/{gsub(/.*"now":"|"/, "", $2); print $2}'
+	curl "127.0.0.1:$(getPort)/proxies/${select_outbound}" -H "Content-Type: application/json" 2>/dev/null | getKeyValue now
 }
 
 getNowMode(){
 	secret=$(getSecret)
 	if [ -n "${secret}" ]; then
-		curl "127.0.0.1:$(getPort)/configs" -H "authorization: Bearer ${secret}" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"mode"/{gsub(/.*"mode":"|"/, "", $2); print $2}'
-		return
+		curl "127.0.0.1:$(getPort)/configs" -H "authorization: Bearer ${secret}" -H "Content-Type: application/json" 2>/dev/null | getKeyValue mode
+	return
 	fi
-	curl "127.0.0.1:$(getPort)/configs" -H "Content-Type: application/json" 2>/dev/null | tr ',' "\n" | awk -F '[:,]' '/"mode"/{gsub(/.*"mode":"|"/, "", $2); print $2}'
+	curl "127.0.0.1:$(getPort)/configs" -H "Content-Type: application/json" 2>/dev/null | getKeyValue mode
 }

@@ -8,11 +8,15 @@ fi
 
 MODDIR=${0%/*}
 DataPath="/data/adb/sfm"
-. ${MODDIR}/libs/utils.sh
-load
+. ${MODDIR}/utils.sh
+load ${MODDIR}/../config.sh
 
-Outbound=
-ClashMode=
+if [ -f "${MODDIR}/../run/.lastOutbound" ]; then
+	Outbound="$(cat "${MODDIR}/../run/.lastOutbound")"
+fi
+if [ -f "${MODDIR}/../run/.lastClashMode" ]; then
+	ClashMode="$(cat "${MODDIR}/../run/.lastClashMode")"
+fi
 
 switchMode(){
 	if [ "${UseCompatibleMode}" = "true" ]; then
@@ -64,7 +68,7 @@ selectMode(){
 			else
 				target="${direct_outbound}"
 			fi
-			Outbound=`getNowOutbound`
+			getNowOutbound > "${MODDIR}/../run/.lastOutbound"
 			setOutbound "${select_outbound}" "${direct_outbound}"
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
@@ -99,7 +103,7 @@ clashMode(){
 			else
 				target="${direct_mode}"
 			fi
-			ClashMode=`getNowMode`
+			getNowMode > "${MODDIR}/../run/.lastClashMode"
 			setMode "${target}"
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
