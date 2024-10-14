@@ -42,6 +42,9 @@ direct_outbound_list=""
 ###  direct_outbound_list="Ciallo,柚子直连;爱莉希雅世界第一,十三英桀"
 ###  切记使用英文逗号( , )和英文分号( ; )
 
+default_mode=
+## mode 模式下没有历史记录时断开 WiFi 的默认选择
+
 direct_mode=规则模式-我不免流-FakeIP
 ## mode 模式下，在 WiFi 开启时自动选择的 clash mode
 

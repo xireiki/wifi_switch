@@ -89,6 +89,7 @@ clashMode(){
 			if [ -n "${proxy_mode}" ]; then
 				target="${proxy_mode}"
 			fi
+			printf "setMode: ${target}"
 			setMode "${target}"
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
@@ -104,6 +105,7 @@ clashMode(){
 				target="${direct_mode}"
 			fi
 			getNowMode > "${MODDIR}/../run/.lastClashMode"
+			printf "setMode: ${target}"
 			setMode "${target}"
 		elif [ "${sta}" = 2 ] || [ "${sta}" = 3 ]; then
 			sleep 1
@@ -122,9 +124,8 @@ if wifi || wifi1; then
 		if connected; then
 			sta1=1
 		fi
-	fi
-	if [ "${sta1}" = 0 ]; then
-		exit
+	else
+		sta1=1
 	fi
 	case ${mode} in
 		switch)
