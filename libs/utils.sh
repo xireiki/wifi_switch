@@ -81,7 +81,7 @@ getPort(){
 
 status(){
 	if [ "${UseCompatibleMode}" = "true" ]; then
-		curl "127.0.0.1:9999/configs" &>/dev/null
+		curl "127.0.0.1:$(getPort)/configs" &>/dev/null
 		if ! [ $? = 0 ]; then
 			return 1
 		fi
